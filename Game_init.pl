@@ -1,16 +1,15 @@
 %Creating pawn with 3 args allowing to assert predicates correctly
 :- dynamic pawn/3.
 
-%Rule which will clear the "database"
+%clear the "database"
 clear :- retractall(pawn(_X,_Y,_Z)).
 
-%Simples rules of displaying
+%displaying each pawn or its absence
 display(X, Y) :- pawn(X, Y, red), write('o|').
 display(X, Y) :- pawn(X, Y, yellow), write('x|').
 display(_, _) :- write(' .|').
 
-%Displaying the grid
-%Can use between because display is always true so always not false ;)
+%displaying the virtual playing table
 display :-
     between(1, 6, Tmp), Y is 7-Tmp, nl, write('|'),
     between(1, 7, X), not(display(X, Y)) ; true, !.
