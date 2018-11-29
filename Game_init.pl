@@ -39,6 +39,13 @@ add(X, Color) :-
 play(X) :-
     (add(X, Y, yellow), ! ; write('You can not play there !'), nl, abort), display, nl,     %If pawn was added we display, else we abort
     (end(X, Y, red), ! ; playIA).       %Then, if we dont win then IA have to make a move (play)
+    
+playTwoPlayers(Color):-
+    (getX(X), add(X, Y, Color), ! ; write('You cannot play there! Try again'), nl, playTwoPlayers(Color)), display, nl,     %If pawn was added we display, else we abort
+    (end(X, Y, Color), ! ; opposite(Color, NextColor), nl, write('---Player change---'), nl, playTwoPlayers(NextColor)).
+
+getX(X):-
+    write('Choose column to insert:'), read(X).
 
 ia(X, Y, Color) :- X is random(X), add(X, Y, Color), ! .
 %If the first rules is false (full column), the ia plays again until finding a solution  :
