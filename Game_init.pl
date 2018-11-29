@@ -38,8 +38,8 @@ add(X, Color) :-
 
 play:-
     (getX(X), add(X, Y, yellow), ! ; write('You cannot play there!'), nl, play), display, nl,     %If pawn was added we display, else we abort
-    ( end(X, Y, yellow), ! ; nl, write('AI playing...'), choose_move(Xchosen, red), add(Xchosen, red), display, nl, 
-    	(end(Xchosen, Y, red), ! ; play) ).       %Then, if we dont win then IA have to make a move (play)
+    ( end(X, Y, yellow), ! ; nl, write('AI playing...'), choose_move(Xchosen, red), add(Xchosen, Ychosen, red), display, nl, 
+    	(end(Xchosen, Ychosen, red), ! ; play) ).       %Then, if we dont win then IA have to make a move (play)
 
 %manage turns when the game is between 2 physical players
 playTwoPlayers(Color):-
@@ -49,14 +49,6 @@ playTwoPlayers(Color):-
 %reads player's choice
 getX(X):-
     write('Choose column to insert:'), read(X).
-
-%ia(X, Y, Color) :- X is random(X), add(X, Y, Color), ! .
-%If the first rules is false (full column), the ia plays again until finding a solution  :
-%ia(X, Y, Color) :- ia(X,Y, Color), !.
-
-%playIA :- ia(X,Y,Color), nl, write('AI turn:'), display, nl, end(X,Y,Color).
-    
-
 
 %calculate acceptable height
 height(X, Count) :- aggregate_all(count, pawn(X, _, _), Count).
