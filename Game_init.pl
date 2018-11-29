@@ -6,7 +6,6 @@ clear :- retractall(pawn(_X,_Y,_Z)).
 
 %remove a certain pawn
 removePawn(X) :- height(X,Height),retract(pawn(X,Height,_)).
-removePawn(X,Y) :- retract(pawn(X,Y,_)).
 
 %gives column numbers where we can still insert
 playable(X) :- between(1, 7, X), once(not(pawn(X, 6, _))).
@@ -16,7 +15,7 @@ playableList(L) :- findall(X, playable(X), L).
     
 %Simples rules of displaying
 display(X, Y) :- pawn(X, Y, red), write('O|').
-display(X, Y) :- pawn(X, Y, yellow), write('X.|').
+display(X, Y) :- pawn(X, Y, yellow), write('.X|').
 display(_, _) :- write('._|').
 
 %Displaying the grid
@@ -31,27 +30,33 @@ add(X, Y, Color) :-
     height(X, Count), Y is Count+1,
     integer(Y), Y >= 1, Y < 7,
     asserta(pawn(X, Y, Color)).
-
 %add pawn at good height in column X
 add(X, Color) :-
     add(X, _, Color).
 
-play:-
-    (getX(X), add(X, Y, yellow), ! ; write('You cannot play there!'), nl, play), display, nl,     %If pawn was added we display, else we abort
-    ( end(X, Y, yellow), ! ; nl, write('AI playing...'), choose_move(Xchosen, red), add(Xchosen, Ychosen, red), display, nl, 
-    	(end(Xchosen, Ychosen, red), ! ; play) ).       %Then, if we dont win then IA have to make a move (play)
-
-%manage turns when the game is between 2 physical players
-playTwoPlayers(Color):-
-    (getX(X), add(X, Y, Color), ! ; write('You cannot play there! Try again'), nl, playTwoPlayers(Color)), display, nl,     %If pawn was added we display, else we abort
-    (end(X, Y, Color), ! ; opposite(Color, NextColor), nl, write('---Player change---'), nl, playTwoPlayers(NextColor)).
-
 %reads player's choice
 getX(X):-
-    write('Choose column to insert:'), read(X).
+    nl, write('Choose column to insert in:'), read(X).
 
 %calculate acceptable height
 height(X, Count) :- aggregate_all(count, pawn(X, _, _), Count).
+
+%normal game against AI
+playVersusAI:-
+    (getX(X), write('X:'), add(X, Y, yellow), ! ; write('You cannot play there! Please, try again.'), nl, playVersusAI), display, nl,     %If pawn was added we display, else we abort
+    ( end(X, Y, yellow), ! ; nl, write('AI playing...'), choose_move(Xchosen, red), add(Xchosen, Ychosen, red), display, nl, 
+    	(end(Xchosen, Ychosen, red), ! ; playVersusAI) ).       %Then, if we dont win then IA have to make a move (play)
+
+%two AIs playing against each other
+playTwoAIs(Color):-
+    ( nl, write('AI '), write(Color), write(' playing...'), choose_move(Xchosen, Color), add(Xchosen, Ychosen, Color), display, nl, 
+    	(end(Xchosen, Ychosen, Color), ! ; opposite(Color, NextColor), playTwoAIs(NextColor)) ).
+
+%manage turns when the game is between 2 physical players
+playTwoPlayers(Color):-
+    (getX(X), add(X, Y, Color), ! ; write('You cannot play there! Pleasem, try again.'), nl, playTwoPlayers(Color)), display, nl,     %If pawn was added we display, else we abort
+    (end(X, Y, Color), ! ; opposite(Color, NextColor), nl, write('---Player change---'), nl, playTwoPlayers(NextColor)).
+
 
 %calculating how many pawns of same color are there
 %in the vector(not line, as it has direction) defined by (X,Y)->(DeltaX,DeltaY)
@@ -89,18 +94,19 @@ value(_,_, _, Val):- Val is 0, !.
 
 
 update((_X, _Color), Value, (X1,Color1, Value1),(X1,Color1, Value1)):-
-	Value =< Value1.    
+	Value < Value1.    
 update((X, Color), Value, (_X1,_Color1, Value1),(X, Color, Value)):-
     Value > Value1.
+%we add a randomizer in the case we have more options with equal values
+update((X, Color), Value, (X1,Color1, Value1),(XO, ColorO, ValueO)):-
+    Value = Value1, random_between(0,3,Nb), (Nb=0,  XO is X, ColorO = Color, ValueO is Value;
+    									XO is X1, ColorO = Color1, ValueO is Value1).
 
 %XMove is the column where the ia plays
 choose_move(XMove, C) :- playableList(L), evaluate_and_choose(L, 3, 1, 0, (_X1, C, -100000), (XMove, _, _)),!.
-    %setof(XMove, playableList(L), L), evaluate_and_choose(L, 3, 1, 0, (_X1, C, -100000), (XMove, _, _)).
-
 
 
 evaluate_and_choose([], _Depth, _MaxMin, _ValueInit, (XRecord, Color, ValueRecord), (XRecord, Color, ValueRecord) ).
-
 %%Moves contains the X available
 evaluate_and_choose([Move|Moves], Depth, MaxMin, ValueInit, (XRecord, Color, ValueRecord),(XBest, Color1, ValueBest) ):-
     (
@@ -111,7 +117,6 @@ evaluate_and_choose([Move|Moves], Depth, MaxMin, ValueInit, (XRecord, Color, Val
         removePawn(Move), %remove the pawn added before starting exploring the next branch
         evaluate_and_choose(Moves, Depth, MaxMin, ValueInit, (XNewRecord, NewColor, ValueNewRecord), (XBest, Color1, ValueBest))
     ).
-
 
     
 %calculates the value of the considered move, adds it to all the value of the moves already done, 
@@ -127,10 +132,6 @@ minimax(D, MaxMin, X, C, ValueInit, ValueReturn) :-
     opposite(C, C1),
     evaluate_and_choose(Moves, D1, MinMax, ValueReturn, (_X, C1, -10000), (_X1, _C,_ValueReturn)).
 
-%play:- (between(1,4,_),
- %   write('Select column'),
-  %  read(X),
-   % catch(play(X),_E, write('next'))); true.
 
 end(X,Y,Color):-
     Color = yellow, win(X,Y,Color,3), write('Yellow (X) won!'), clear, !;
