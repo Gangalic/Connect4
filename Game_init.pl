@@ -103,6 +103,7 @@ update((X, Color), Value, (X1,Color1, Value1),(XO, ColorO, ValueO)):-
     									XO is X1, ColorO = Color1, ValueO is Value1).
 
 %XMove is the column where the ia plays
+%by changing the depth (second parameter of evaluate_and_choose), we change the difficulty
 choose_move(XMove, C) :- playableList(L), evaluate_and_choose(L, 3, 1, 0, (_X1, C, -100000), (XMove, _, _)),!.
 
 
