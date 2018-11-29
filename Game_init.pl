@@ -15,9 +15,9 @@ playable(X) :- between(1, 7, X), once(not(pawn(X, 6, _))).
 playableList(L) :- findall(X, playable(X), L).
     
 %Simples rules of displaying
-display(X, Y) :- pawn(X, Y, red), write('o|').
-display(X, Y) :- pawn(X, Y, yellow), write('x|').
-display(_, _) :- write(' .|').
+display(X, Y) :- pawn(X, Y, red), write('O|').
+display(X, Y) :- pawn(X, Y, yellow), write('X.|').
+display(_, _) :- write('._|').
 
 %Displaying the grid
 %Can use between because display is always true so always not false ;)
@@ -36,24 +36,25 @@ add(X, Y, Color) :-
 add(X, Color) :-
     add(X, _, Color).
 
-play(X) :-
-    (add(X, Y, yellow), ! ; write('You can not play there !'), nl, abort), display, nl,     %If pawn was added we display, else we abort
-    (end(X, Y, red), ! ; playIA).       %Then, if we dont win then IA have to make a move (play)
+play:-
+    (getX(X), add(X, Y, yellow), ! ; write('You cannot play there!'), nl, play), display, nl,     %If pawn was added we display, else we abort
+    ( end(X, Y, yellow), ! ; nl, write('AI playing...'), choose_move(Xchosen, red), add(Xchosen, red), display, nl, 
+    	(end(Xchosen, Y, red), ! ; play) ).       %Then, if we dont win then IA have to make a move (play)
 
-%Manage turns when the game is between 2 physical players
+%manage turns when the game is between 2 physical players
 playTwoPlayers(Color):-
     (getX(X), add(X, Y, Color), ! ; write('You cannot play there! Try again'), nl, playTwoPlayers(Color)), display, nl,     %If pawn was added we display, else we abort
     (end(X, Y, Color), ! ; opposite(Color, NextColor), nl, write('---Player change---'), nl, playTwoPlayers(NextColor)).
 
-%Read player's choice
+%reads player's choice
 getX(X):-
     write('Choose column to insert:'), read(X).
 
-ia(X, Y, Color) :- X is random(X), add(X, Y, Color), ! .
+%ia(X, Y, Color) :- X is random(X), add(X, Y, Color), ! .
 %If the first rules is false (full column), the ia plays again until finding a solution  :
-ia(X, Y, Color) :- ia(X,Y, Color), !.
+%ia(X, Y, Color) :- ia(X,Y, Color), !.
 
-playIA :- ia(X,Y,Color), nl, write('AI turn:'), display, nl, end(X,Y,Color).
+%playIA :- ia(X,Y,Color), nl, write('AI turn:'), display, nl, end(X,Y,Color).
     
 
 
@@ -101,7 +102,7 @@ update((X, Color), Value, (_X1,_Color1, Value1),(X, Color, Value)):-
     Value > Value1.
 
 %XMove is the column where the ia plays
-choose_move(XMove, C) :- playableList(L), evaluate_and_choose(L, 3, 1, 0, (_X1, C, -100000), (XMove, _, _)).
+choose_move(XMove, C) :- playableList(L), evaluate_and_choose(L, 3, 1, 0, (_X1, C, -100000), (XMove, _, _)),!.
     %setof(XMove, playableList(L), L), evaluate_and_choose(L, 3, 1, 0, (_X1, C, -100000), (XMove, _, _)).
 
 
@@ -140,6 +141,6 @@ minimax(D, MaxMin, X, C, ValueInit, ValueReturn) :-
    % catch(play(X),_E, write('next'))); true.
 
 end(X,Y,Color):-
-    Color = yellow, win(X,Y,Color,3), write('Yellow (o) won!'), clear, !;
-    Color = red, win(X,Y,Color,3), write('Red (x) won!'), clear, !;
+    Color = yellow, win(X,Y,Color,3), write('Yellow (X) won!'), clear, !;
+    Color = red, win(X,Y,Color,3), write('Red (O) won!'), clear, !;
     not(playable(_)), write('No more moves left :/'), clear, !.
