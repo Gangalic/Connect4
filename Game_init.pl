@@ -39,11 +39,13 @@ add(X, Color) :-
 play(X) :-
     (add(X, Y, yellow), ! ; write('You can not play there !'), nl, abort), display, nl,     %If pawn was added we display, else we abort
     (end(X, Y, red), ! ; playIA).       %Then, if we dont win then IA have to make a move (play)
-    
+
+%Manage turns when the game is between 2 physical players
 playTwoPlayers(Color):-
     (getX(X), add(X, Y, Color), ! ; write('You cannot play there! Try again'), nl, playTwoPlayers(Color)), display, nl,     %If pawn was added we display, else we abort
     (end(X, Y, Color), ! ; opposite(Color, NextColor), nl, write('---Player change---'), nl, playTwoPlayers(NextColor)).
 
+%Read player's choice
 getX(X):-
     write('Choose column to insert:'), read(X).
 
@@ -138,6 +140,6 @@ minimax(D, MaxMin, X, C, ValueInit, ValueReturn) :-
    % catch(play(X),_E, write('next'))); true.
 
 end(X,Y,Color):-
-    Color = yellow, win(X,Y,Color,3), write('You won!'), clear, !;
-    Color = red, win(X,Y,Color,3), write('You lost!'), clear, !;
+    Color = yellow, win(X,Y,Color,3), write('Yellow (o) won!'), clear, !;
+    Color = red, win(X,Y,Color,3), write('Red (x) won!'), clear, !;
     not(playable(_)), write('No more moves left :/'), clear, !.
