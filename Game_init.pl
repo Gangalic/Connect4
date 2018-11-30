@@ -10,16 +10,15 @@ removePawn(X) :- height(X,Height),retract(pawn(X,Height,_)).
 %Return columns where we can still insert pawns
 playable(X) :- between(1, 7, X), once(not(pawn(X, 6, _))).
 
-%gives column numbers where we can still insert into a list
+%Create a list L with numbers of all insertable columns
 playableList(L) :- findall(X, playable(X), L).
     
-%Simples rules of displaying
+%Simple rules of displaying
 display(X, Y) :- pawn(X, Y, red), write('O|').
 display(X, Y) :- pawn(X, Y, yellow), write('.X|').
 display(_, _) :- write('._|').
 
-%Displaying the grid
-%Can use between because display is always true so always not false ;)
+%Displaying the table
 display :-
     between(1, 6, Tmp), Y is 7-Tmp, nl, write('|'),
     between(1, 7, X), not(display(X, Y)) ; true, !.
