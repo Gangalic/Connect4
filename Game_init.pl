@@ -1,13 +1,13 @@
-%Creating pawn with 3 args allowing to assert predicates correctly
+%Creating pawn with 3 args that we'll use and store in "database"
 :- dynamic pawn/3.
 
-%clear the "database"
+%Clear the "database"
 clear :- retractall(pawn(_X,_Y,_Z)).
 
-%remove a certain pawn
+%Remove a certain pawn from "database"
 removePawn(X) :- height(X,Height),retract(pawn(X,Height,_)).
 
-%gives column numbers where we can still insert
+%Return columns where we can still insert pawns
 playable(X) :- between(1, 7, X), once(not(pawn(X, 6, _))).
 
 %gives column numbers where we can still insert into a list
