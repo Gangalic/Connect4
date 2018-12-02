@@ -44,7 +44,13 @@ height(X, Count) :- aggregate_all(count, pawn(X, _, _), Count).
 playVersusAI:-
     (getX(X), write('X:'), add(X, Y, yellow), ! ; write('You cannot play there! Please, try again.'), nl, playVersusAI), display, nl,     %If pawn was added we display, else we retry
     ( end(X, Y, yellow), ! ; nl, write('AI playing...'), choose_move(Xchosen, red), add(Xchosen, Ychosen, red), display, nl, 
-    	(end(Xchosen, Ychosen, red), ! ; playVersusAI) ).       %Then, if we dont win then IA have to make a move (play)
+    	(end(Xchosen, Ychosen, red), ! ; playVersusAI) ).       %Then, if we don't win AI has to make a move (play)
+	
+%Start normal game against random AI
+playVersusAIRandom:-
+    (getX(X), write('X:'), add(X, Y, yellow), ! ; write('You cannot play there! Please, try again.'), nl, playVersusAI), display, nl,     %If pawn was added we display, else we retry
+    ( end(X, Y, yellow), ! ; nl, write('AI playing...'), random_between(1, 7, Xchosen), add(Xchosen, Ychosen, red), display, nl, 
+    	(end(Xchosen, Ychosen, red), ! ; playVersusAI) ).       %Then, if we don't win AI has to make a move (play)
 
 %Start two AIs playing against each other
 playTwoAIs(Color):-
@@ -125,7 +131,7 @@ evaluate_and_choose([Move|Moves], Depth, MaxMin, ValueInit, (XRecord, Color, Val
 %Calculate the value of the considered move and add it to all the value of the moves already done
 minimax(0, MaxMin, X, C, ValueInit, ValueReturn) :- height(X, Y), value(X, Y, C, V), ValueReturn is V*MaxMin + ValueInit.
 minimax(D, MaxMin, X, C, ValueInit, ValueReturn) :- 
-    D > 0, %this line might be souce of bugs (return false ?)
+    D > 0,
     D1 is D-1,
     height(X, Y), 
     value(X, Y, C, V),
