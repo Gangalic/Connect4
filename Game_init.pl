@@ -107,7 +107,7 @@ valueDefensive(X,Y, C, Val):- opposite(C, C1), contPawns(X, Y, C1, 2), Val is 50
 valueDefensive(X,Y, C, Val):- opposite(C, C1), contPawns(X, Y, C1, 1), Val is 5, !.
 valueDefensive(_,_, _, Val):- Val is 0, !.
 
-%Calculate the value(power) of putting a certain pawn here
+%Calculate the value(power) of putting a certain pawn here for offensive strategy
 %we consider that (X,Y) pawn is already added, and the withdraw is done after
 valueOffensive(X,Y, C, Val):- contPawns(X, Y, C, 3), Val is 1000, !.
 valueOffensive(X,Y, C, Val):- opposite(C, C1), contPawns(X, Y, C1, 3), Val is 500, !.
