@@ -50,7 +50,7 @@ playVersusAI:-
 playVersusAIRandom:-
     (getX(X), write('X:'), add(X, Y, yellow), ! ; write('You cannot play there! Please, try again.'), nl, playVersusAI), display, nl,     %If pawn was added we display, else we retry
     ( end(X, Y, yellow), ! ; nl, write('AI playing...'), random_between(1, 7, Xchosen), add(Xchosen, Ychosen, red), display, nl, 
-    	(end(Xchosen, Ychosen, red), ! ; playVersusAI) ).       %Then, if we don't win AI has to make a move (play)
+    	(end(Xchosen, Ychosen, red), ! ; playVersusAIRandom) ).       %Then, if we don't win AI has to make a move (play)
 
 %Start two AIs playing against each other
 playTwoAIs(Color):-
@@ -78,7 +78,7 @@ around(X, Y, DeltaX, DeltaY, Color, Count) :-
 
 %Gives true if there is a serie of at least Lim pawns of the same color C alligned in any specific direction (without (X,Y) pawn)
 contPawns(X, Y, C, Lim) :- around(X, Y, 1, 0, C, C1), around(X, Y, -1, 0, C, C2), Count is C1+C2, Count >= Lim, !. %horizontal
-contPawns(X, Y, C, Lim) :- around0(X, Y, 0, 1, C, C1), around(X, Y, 0, -1, C, C2), Count is C1+C2, Count >= Lim, !. %vertical
+contPawns(X, Y, C, Lim) :- around(X, Y, 0, 1, C, C1), around(X, Y, 0, -1, C, C2), Count is C1+C2, Count >= Lim, !. %vertical
 contPawns(X, Y, C, Lim) :- around(X, Y, 1, -1, C, C1), around(X, Y, -1, 1, C, C2), Count is C1+C2, Count >= Lim, !. %SE->NW diag
 contPawns(X, Y, C, Lim) :- around(X, Y, 1, 1, C, C1), around(X, Y, -1, -1, C, C2), Count is C1+C2, Count >= Lim, !. %SW->NE diag
 
