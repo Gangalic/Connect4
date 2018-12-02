@@ -136,7 +136,7 @@ minimax(D, MaxMin, X, C, ValueInit, ValueReturn) :-
     evaluate_and_choose(Moves, D1, MinMax, ValueReturn, (_X, C1, -10000), (_X1, _C,_ValueReturn)).
 
 
-%Check if the game is other and saying who won
+%Check if the game is over and saying who won
 end(X,Y,Color):-
     Color = yellow, win(X,Y,Color,3), write('Yellow (X) won!'), clear, !;
     Color = red, win(X,Y,Color,3), write('Red (O) won!'), clear, !;
