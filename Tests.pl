@@ -11,10 +11,10 @@ test_add_remove():-test_add(3,1,red),test_remove(3),not(test_add(8,9,yellow)).
 %test random player against normal AI
 playRandomVersusAI(WinnerColor):-
     random(1,7,X), height(X,Y), add(X, Y, yellow), display, nl,     %If pawn was added we display, else we retry
-    ( end(X, Y, yellow,WinnerColor), ! ; nl, write('AI playing...'), choose_move_normal_IA(Xchosen, red), add(Xchosen, Ychosen, red), display, nl, 
-        (end(Xchosen, Ychosen, red,WinnerColor), ! ; playRandomVersusAI(WinnerColor)) ).       %Then, if we don't win AI has to make a move (play)
+    ( end_with_winner(X, Y, yellow,WinnerColor), ! ; nl, write('AI playing...'), choose_move_normal_IA(Xchosen, red), add(Xchosen, Ychosen, red), display, nl, 
+        (end_with_winner(Xchosen, Ychosen, red,WinnerColor), ! ; playRandomVersusAI(WinnerColor)) ).       %Then, if we don't win AI has to make a move (play)
     
-end(X,Y,Color,WinnerColor):-
+end_with_winner(X,Y,Color,WinnerColor):-
     Color = yellow, win(X,Y,Color,3), write('Random won!'), clear, WinnerColor is Color, !;
     Color = red, win(X,Y,Color,3), write('AI won!'), clear, WinnerColor is Color, !;
     not(playable(_)), write('No more moves left :/'), clear, WinnerColor is green, !.
