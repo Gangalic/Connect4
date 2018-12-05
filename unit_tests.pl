@@ -1,3 +1,5 @@
+:- use_module(game).
+
 %test height calculation
 test_height:-add(2,red),add(2,red),add(2,red),height(2,Height),Height is 3, !.
 
