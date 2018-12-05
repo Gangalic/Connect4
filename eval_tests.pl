@@ -1,4 +1,5 @@
 :- use_module(game).
+:- use_module(normal_IA).
 
 %test random player against normal AI
 end_with_winner(X,Y,Color,WinnerColor):-
