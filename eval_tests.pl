@@ -10,7 +10,7 @@ end_with_winner(X,Y,Color,WinnerColor):-
 %make AI play versus random insert
 playRandomVersusAI(WinnerColor):-
     random(1,7,X), add(X, Y, yellow), 
-    ( end_with_winner(X, Y, yellow,WinnerColor), ! ; choose_move(Xchosen, red), add(Xchosen, Ychosen, red), 
+    ( end_with_winner(X, Y, yellow,WinnerColor), ! ; choose_move_normal_IA(Xchosen, red), add(Xchosen, Ychosen, red), 
         (end_with_winner(Xchosen, Ychosen, red,WinnerColor), ! ; playRandomVersusAI(WinnerColor)) ).
 
 %test 100 cases of games against random
